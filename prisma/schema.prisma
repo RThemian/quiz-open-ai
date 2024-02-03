@@ -55,4 +55,6 @@ model VerificationRequest {
   updatedAt  DateTime @updatedAt
 
   @@unique([identifier, token])
+
+  @@index([userId], name: "userId")
 }
