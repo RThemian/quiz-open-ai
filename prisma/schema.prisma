@@ -1,37 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model Account {
-  id                 String    @id @default(cuid())
-  userId             String
-  providerType       String
-  providerId         String
-  providerAccountId  String
-  refreshToken       String?
-  accessToken        String?
-  accessTokenExpires DateTime?
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-  user               User      @relation(fields: [userId], references: [id])
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([providerId, providerAccountId])
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
   id           String   @id @default(cuid())
+  sessionToken String   @unique
   userId       String
   expires      DateTime
-  sessionToken String   @unique
-  accessToken  String   @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user         User     @relation(fields: [userId], references: [id])
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model User {
@@ -40,21 +46,47 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  games         Game[]
   accounts      Account[]
   sessions      Session[]
 }
 
-model VerificationRequest {
-  id         String   @id @default(cuid())
-  identifier String
-  token      String   @unique
-  expires    DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+enum GameType {
+  mcq
+  open_ended
+}
 
-  @@unique([identifier, token])
+model Game {
+  id          String     @id @default(cuid())
+  userId      String
+  questions   Question[]
+  timeStarted DateTime
+  topic       String
+  timeEnded   DateTime?
+  gameType    GameType
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId], name: "userId")
+  @@index([userId])
+}
+
+model topic_count {
+  id    String @id @default(cuid())
+  topic String @unique
+  count Int
+}
+
+model Question {
+  id                String   @id @default(cuid())
+  question          String
+  answer            String
+  gameId            String
+  options           Json? // for mcq questions
+  percentageCorrect Float? // for open_ended questions
+  isCorrect         Boolean? // for mcq questions
+  questionType      GameType
+  userAnswer        String?
+
+  game Game @relation(fields: [gameId], references: [id])
+
+  @@index([gameId])
 }
