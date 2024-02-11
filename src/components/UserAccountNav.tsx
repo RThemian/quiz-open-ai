@@ -6,6 +6,8 @@ import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
 import {Button} from './ui/button';
+import { LogOut } from 'lucide-react';
+import UserAvatar from './UserAvatar';
 
 type Props = {
     user: Pick<User, "name" | "email" | "image">;
@@ -17,7 +19,7 @@ const UserAccountNav = ({user}: Props) => {
         <DropdownMenuTrigger>
             <div className="flex items-center gap-2 p-2 justify-start">
             {/* user avatar */}
-            <Button>hi</Button>
+            <UserAvatar user = {user}/>
             </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent className='bg-white' align='end'>
@@ -41,6 +43,7 @@ const UserAccountNav = ({user}: Props) => {
             className='text-red-600 cursor-pointer'
             >
                 Sign out
+                <LogOut className='w-4 h-4'/>
             </DropdownMenuItem>
         </DropdownMenuContent>
     </DropdownMenu>
