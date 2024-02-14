@@ -5,7 +5,7 @@ type Props = {}; // add props here explain: https://reactjs.org/docs/components-
 
 const Quiz = (props: Props) => {
     return (
-        <div>
+        <div className='p-4'>
         <h1>Quiz</h1>
         </div>
     );
