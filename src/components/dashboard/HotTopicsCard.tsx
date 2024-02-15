@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 // import WordCloud from "../WordCloud";
 import { prisma } from "@/lib/db";
+import CustomWordCloud from "../CustomWordCloud";
 
 type Props = {};
 
@@ -28,8 +29,8 @@ const HotTopicsCard = async (props: Props) => {
         </CardDescription>
       </CardHeader>
       <CardContent className="pl-2">
-        {/* <WordCloud formattedTopics={formattedTopics} /> */}
-        WordCloud needs to be implemented
+        <CustomWordCloud />
+       
       </CardContent>
     </Card>
   );

@@ -36,13 +36,13 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     jwt: async ({ token }) => {
-      console.log('jwt callback - token:', token);
+      
       let db_user = await prisma.user.findFirst({
         where: {
           email: token?.email,
         },
       });
-      console.log('jwt callback - db_user:', db_user);
+     
       if (!db_user) {
         // User does not exist, create a new user
         db_user = await prisma.user.create({
@@ -53,7 +53,7 @@ export const authOptions: NextAuthOptions = {
             // Add other fields as necessary
           },
         });
-        console.log('jwt callback - new db_user:', db_user);
+     
       }
       if (db_user) {
         token.id = db_user.id;
@@ -61,8 +61,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     session: ({ session, token }) => {
-      console.log('session callback - session:', session);
-      console.log('session callback - token:', token);
+    
       if (token) {
         session.user.id = token.id;
         session.user.name = token.name;
