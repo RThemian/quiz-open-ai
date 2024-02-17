@@ -1,29 +1,26 @@
-// boilerplate code for quiz page
-import { redirect } from 'next/navigation';
-import React from 'react';
-import { getAuthSession } from '@/lib/nextauth';
-import QuizCreation from "@/components/QuizCreation"
+import React from "react";
 
-type Props = {}; // add props here explain: https://reactjs.org/docs/components-and-props.html
+import { getAuthSession } from "@/lib/nextauth";
+import { redirect } from "next/navigation";
+import QuizCreation from "@/components/QuizCreation";
 
-//metadata for the page
 export const metadata = {
-    title: "Quiz",
-    description: "Take a quiz on a topic",
-    url: "/quiz",
-    image: "",
-    keywords: ["quiz", "topic", "test"],
+  title: "Quiz | Quizzzy",
+  description: "Quiz yourself on anything!",
+};
+
+interface Props {
+  searchParams: {
+    topic?: string;
   };
+}
 
-const QuizPage = async (props: Props) => {
-    const session = await getAuthSession();
-    if (!session?.user) {
-        return redirect("/");
-    }
+const Quiz = async ({ searchParams }: Props) => {
+  const session = await getAuthSession();
+  if (!session?.user) {
+    redirect("/");
+  }
+  return <QuizCreation  />;
+};
 
-    return (
-        <QuizCreation />
-    );
-    };
-
-export default QuizPage;
+export default Quiz;
