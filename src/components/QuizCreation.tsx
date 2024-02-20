@@ -2,6 +2,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { BookOpen, CopyCheck } from "lucide-react";
 import { quizCreationSchema } from "@/schemas/form/quiz";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -29,6 +30,8 @@ import { Input } from "./ui/input";
 type Props = {};
 type Input = z.infer<typeof quizCreationSchema>;
 
+
+
 const QuizCreation = (props: Props) => {
   const form = useForm<Input>({
     resolver: zodResolver(quizCreationSchema),
@@ -38,6 +41,7 @@ const QuizCreation = (props: Props) => {
       amount: 5,
     },
   });
+  const type = form.watch("type");
   function onSubmit(data: Input) {
     console.log(data);
   }
@@ -96,9 +100,9 @@ const QuizCreation = (props: Props) => {
                   </FormItem>
                 )}
               />
-
-              <div className="flex justify-between">
+ <div className="flex justify-between">
                 <Button
+                  type="button"
                   variant={
                     form.getValues("type") === "mcq" ? "default" : "secondary"
                   }
@@ -106,9 +110,9 @@ const QuizCreation = (props: Props) => {
                   onClick={() => {
                     form.setValue("type", "mcq");
                   }}
-                  type="button"
+                  
                 >
-                  {/* <CopyCheck className="w-4 h-4 mr-2" /> Multiple Choice */}
+                  <CopyCheck className="w-4 h-4 mr-2" /> Multiple Choice
                 </Button>
                 <Separator orientation="vertical" />
                 <Button
@@ -121,9 +125,9 @@ const QuizCreation = (props: Props) => {
                   onClick={() => form.setValue("type", "open_ended")}
                   type="button"
                 >
-                  {/* <BookOpen className="w-4 h-4 mr-2" /> Open Ended */}
+                  <BookOpen className="w-4 h-4 mr-2" /> Open Ended
                 </Button>
-              </div>
+              </div>              
               <Button  type="submit">
                 Submit
               </Button>
