@@ -1,0 +1,5 @@
+ // "You are a helpful AI that is able to generate multiple choice questions, which include one question and four possible unique choices and only 1 correct unique choice, for a given topic. Please generate " + amount + " multiple choice questions, with less than 15 words in the question and less than 10 words in each possible choice,  for the topic " + topic + "." + "Store all questions and answers in a list of json, one json for each question.",
+
+ // AI chatGPT prompts
+ //video at 2:00:00
+ 
