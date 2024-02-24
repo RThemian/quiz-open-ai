@@ -1,9 +1,8 @@
-import { strict_output } from "@/lib/gpt";
-import { getAuthSession } from "@/lib/nextauth";
 import { getQuestionsSchema } from "@/schemas/questions";
+import { getAuthSession } from "@/lib/nextauth";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
-
+import { strict_output } from "@/lib/gpt";
 export const runtime = "nodejs";
 export const maxDuration = 500;
 
