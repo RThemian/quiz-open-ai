@@ -4,6 +4,9 @@ import React from 'react'
 import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider as NextThemesProvider, ThemeProvider } from 'next-themes';  
 import { type ThemeProviderProps } from 'next-themes/dist/types';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 type Props = {
     children: React.ReactNode 
@@ -12,6 +15,7 @@ type Props = {
 
 const Providers = ({children, ...props}: Props) => {
   return (
+    <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute='class' 
     enableSystem
     defaultTheme='system'
@@ -20,7 +24,7 @@ const Providers = ({children, ...props}: Props) => {
         {children}
     </SessionProvider>
     </ThemeProvider>
- 
+ </QueryClientProvider>
   )
 }
 

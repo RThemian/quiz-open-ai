@@ -2,4 +2,7 @@
 
  // AI chatGPT prompts
  //video at 2:00:00
- 
+ // video at 2:15:19
+
+ //react-query to useMutations
+ // npm i @tanstack/react-query to install react-query which is a library for fetching, caching and updating server state in react applications
