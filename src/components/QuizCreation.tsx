@@ -1,78 +1,95 @@
 "use client";
-import React from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { BookOpen, CopyCheck } from "lucide-react";
 import { quizCreationSchema } from "@/schemas/form/quiz";
+import React from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { BookOpen, CopyCheck } from "lucide-react";
+import { Separator } from "./ui/separator";
+import axios, { AxiosError } from "axios";
+import { useMutation } from "@tanstack/react-query";
+// import { useToast } from "../ui/use-toast";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
-import { Button } from "./ui/button";
-import { Separator } from "./ui/separator";
-import {useMutation} from "@tanstack/react-query";
-import {
-  Form,
+} from "@/components/ui/card";
+// import LoadingQuestions from "../LoadingQuestions";
 
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormControl,
-} from "./ui/form";
-import { Input } from "./ui/input";
-import { useRouter } from "next/navigation";
-import axios from "axios";
+type Props = {
+  topic: string;
+};
 
-type Props = {};
 type Input = z.infer<typeof quizCreationSchema>;
 
-
-
-const QuizCreation = (props: Props) => {
+const QuizCreation = ({ topic: topicParam }: Props) => {
   const router = useRouter();
-  const {mutate: getQuestions, isLoading} = useMutation({
-    mutationFn: async ({amount, topic, type}: Input) => {
-      const response = await axios.post('api/game', {
-        amount,
-        topic,
-        type,
-      });
+  const [showLoader, setShowLoader] = React.useState(false);
+  const [finishedLoading, setFinishedLoading] = React.useState(false);
+  // const { toast } = useToast();
+  const { mutate: getQuestions, isLoading } = useMutation({
+    mutationFn: async ({ amount, topic, type }: Input) => {
+      const response = await axios.post("/api/game", { amount, topic, type });
       return response.data;
-    }
-  })
- 
+    },
+  });
+
   const form = useForm<Input>({
     resolver: zodResolver(quizCreationSchema),
     defaultValues: {
-      topic: "",
+      topic: topicParam,
       type: "mcq",
-      amount: 5,
+      amount: 3,
     },
   });
-  const type = form.watch("type");
-  function onSubmit(input: Input) {
-    getQuestions({
-      amount: input.amount,
-      topic: input.topic,
-      type: input.type,
-    }, 
-    {onSuccess: ({gameId}) => {
-      if (form.getValues("type") == "open_ended") {
-        router.push(`/play/open-ended/${gameId}`);
-      } else {
-        router.push(`/play/mcq/${gameId}`);
-      }
-      }
-    });
-  }
 
-form.watch();
+  const onSubmit = async (data: Input) => {
+    setShowLoader(true);
+    getQuestions(data, {
+      onError: (error) => {
+        setShowLoader(false);
+        if (error instanceof AxiosError) {
+          if (error.response?.status === 500) {
+            // toast({
+            //   title: "Error",
+            //   description: "Something went wrong. Please try again later.",
+            //   variant: "destructive",
+            // });
+          }
+        }
+      },
+      onSuccess: ({ gameId }: { gameId: string }) => {
+        setFinishedLoading(true);
+        setTimeout(() => {
+          if (form.getValues("type") === "mcq") {
+            router.push(`/play/mcq/${gameId}`);
+          } else if (form.getValues("type") === "open_ended") {
+            router.push(`/play/open-ended/${gameId}`);
+          }
+        }, 2000);
+      },
+    });
+  };
+  form.watch();
+
+  // if (showLoader) {
+  //   return <LoadingQuestions finished={finishedLoading} />;
+  // }
+
   return (
     <div className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
       <Card>
@@ -126,9 +143,9 @@ form.watch();
                   </FormItem>
                 )}
               />
- <div className="flex justify-between">
+
+              <div className="flex justify-between">
                 <Button
-                  type="button"
                   variant={
                     form.getValues("type") === "mcq" ? "default" : "secondary"
                   }
@@ -136,7 +153,7 @@ form.watch();
                   onClick={() => {
                     form.setValue("type", "mcq");
                   }}
-                  
+                  type="button"
                 >
                   <CopyCheck className="w-4 h-4 mr-2" /> Multiple Choice
                 </Button>
@@ -153,8 +170,8 @@ form.watch();
                 >
                   <BookOpen className="w-4 h-4 mr-2" /> Open Ended
                 </Button>
-              </div>              
-              <Button disabled = {isLoading}  type="submit">
+              </div>
+              <Button disabled={isLoading} type="submit">
                 Submit
               </Button>
             </form>

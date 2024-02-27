@@ -1,22 +1,23 @@
-import { getQuestionsSchema } from "@/schemas/questions";
+import { strict_output } from "@/lib/gpt";
 import { getAuthSession } from "@/lib/nextauth";
+import { getQuestionsSchema } from "@/schemas/questions";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
-import { strict_output } from "@/lib/gpt";
+
 export const runtime = "nodejs";
 export const maxDuration = 500;
 
 export async function POST(req: Request, res: Response) {
   try {
     const session = await getAuthSession();
-    // if (!session?.user) {
-    //   return NextResponse.json(
-    //     { error: "You must be logged in to create a game." },
-    //     {
-    //       status: 401,
-    //     }
-    //   );
-    // }
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: "You must be logged in to create a game." },
+        {
+          status: 401,
+        }
+      );
+    }
     const body = await req.json();
     const { amount, topic, type } = getQuestionsSchema.parse(body);
     let questions: any;
